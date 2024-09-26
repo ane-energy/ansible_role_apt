@@ -125,6 +125,8 @@
         content: "{{ repo_file_content }}"
 
 - name: "Update apt cache"
+  when: not ansible_check_mode
   ansible.builtin.apt:
     update_cache: true
-  when: not ansible_check_mode
+  changed_when: false
+  ignore_errors: true

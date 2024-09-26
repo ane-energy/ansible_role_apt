@@ -4,6 +4,7 @@
   ansible.builtin.apt:
     update_cache: true
   changed_when: false
+  ignore_errors: true
   tags: repo
 
 - name: "Install required packages + update apt cache"
