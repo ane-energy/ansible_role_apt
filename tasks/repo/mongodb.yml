@@ -6,16 +6,16 @@
   block:
     - name: "Set facts for {{ rname }} debian repo"
       ansible.builtin.set_fact:
-        key_url: https://zrepl.cschwarz.com/apt/apt-key.asc
+        key_url: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version | d('7.0') }}.asc"
         key_file_asc: "/etc/apt/keyrings/{{ rname }}.asc"
         key_file: "/etc/apt/keyrings/{{ rname }}.gpg"
         repo_file: "/etc/apt/sources.list.d/{{ rname }}.list"
-        repo_base: https://zrepl.cschwarz.com/apt/debian
+        repo_base: "https://repo.mongodb.org/apt/debian"
 
     - name: "Set repo file content for {{ rname }} debian repo"
       ansible.builtin.set_fact:
         repo_file_content: |
-          deb [signed-by={{ key_file }}] {{ repo_base }} {{ wanted_release }} main
+          deb [signed-by={{ key_file }}] {{ repo_base }} {{ wanted_release }}/mongodb-org/{{ mongodb_version | d('7.0') }} main
 
     - name: "Call generic repo configuration tasks for {{ rname }} debian repo"
       ansible.builtin.include_tasks: repo/__generic__.yml
