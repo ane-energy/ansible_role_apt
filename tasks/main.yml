@@ -60,3 +60,11 @@
     - packages
     - package
     - pkg
+
+- name: "Configure checkmk monitoring"
+  ansible.builtin.import_tasks: "checkmk.yml"
+  tags:
+    - never
+    - monitoring
+    - checkmk
+    - cmk

@@ -1,0 +1,8 @@
+---
+- name: "Copy mongodb CheckMK plugin"
+  ansible.builtin.copy:
+    src: "{{ role_path }}/../../../monitoring/roles/checkmk_agent/files/agent/plugins/mk_apt"
+    dest: /usr/lib/check_mk_agent/plugins/mk_apt
+    mode: 0755
+    owner: root
+    group: root
