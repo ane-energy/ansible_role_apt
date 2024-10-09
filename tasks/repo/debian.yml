@@ -15,6 +15,7 @@
         debian_archived: true
 
     - name: "Configure Debian default repositories"
+      become: true
       ansible.builtin.copy:
         dest: /etc/apt/sources.list.d/debian.list
         content: |
@@ -28,6 +29,7 @@
         wanted_pools: "{{ default_pools if ansible_distribution_major_version | int < 12 else default_pools + ['non-free-firmware'] }}"
 
     - name: "Remove legacy repo files"
+      become: true
       ansible.builtin.file:
         path: "{{ file }}"
         state: absent
@@ -42,7 +44,24 @@
         loop_var: file
 
     - name: "Update package cache"
+      become: true
       ansible.builtin.apt:
         update_cache: true
       changed_when: false
       ignore_errors: true
+
+    - name: "Create ansible cache dir"
+      become: true
+      ansible.builtin.file:
+        path: "/var/cache/ansible/apt_repos"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: "Store repo name to variable"
+      become: true
+      ansible.builtin.file:
+        path: "/var/cache/ansible/apt_repos/{{ rname }}"
+        state: touch
+      changed_when: false

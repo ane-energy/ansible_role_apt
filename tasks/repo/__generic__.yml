@@ -130,3 +130,19 @@
     update_cache: true
   changed_when: false
   ignore_errors: true
+
+- name: "Create ansible cache dir"
+  become: true
+  ansible.builtin.file:
+    path: "/var/cache/ansible/apt_repos"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: "Store repo name to variable"
+  become: true
+  ansible.builtin.file:
+    path: "/var/cache/ansible/apt_repos/{{ rname }}"
+    state: touch
+  changed_when: false

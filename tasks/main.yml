@@ -26,39 +26,21 @@
   loop:
     - /etc/apt/keyrings
 
-- name: "Manage Debian repositories"
-  ansible.builtin.include_tasks: "repo/{{ item }}.yml"
-  loop: "{{ repos + (repos_absent | d([])) }}"
-  vars:
-    rname: "{{ item }}"
-  tags: repo
-
 - name: "Manage APT preferences"
   ansible.builtin.include_tasks: "preferences.yml"
   tags: preferences
 
-- name: "Manage packages"
-  vars:
-    task_files: |
-      {% set include_task_files = [] %}
-      {% if packages_present is defined %}
-      {%    set include_task_files = include_task_files + ['install.yml'] %}
-      {% endif %}
-      {% if packages_absent is defined %}
-      {%    set include_task_files = include_task_files + ['uninstall.yml'] %}
-      {% endif %}
-      {% if packages_hold is defined %}
-      {%    set include_task_files = include_task_files + ['hold.yml'] %}
-      {% endif %}
-      {% if packages_unhold is defined %}
-      {%    set include_task_files = include_task_files + ['unhold.yml'] %}
-      {% endif %}
-      {{ include_task_files }}
-  ansible.builtin.include_tasks: "package/{{ item }}"
-  loop: "{{ task_files }}"
+- name: "Configure apt repositories"
+  ansible.builtin.import_tasks: repos.yml
   tags:
-    - packages
+    - repo
+    - repos
+
+- name: "Configure apt repositories"
+  ansible.builtin.import_tasks: packages.yml
+  tags:
     - package
+    - packages
     - pkg
 
 - name: "Configure checkmk monitoring"
