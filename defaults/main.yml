@@ -1,8 +1,4 @@
 ---
-# default enabled repos
-#repos:
-#  - debian
-
 packages_present_apt:
   - aptitude
   - ca-certificates
