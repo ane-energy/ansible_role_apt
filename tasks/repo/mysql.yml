@@ -10,13 +10,6 @@
         state: absent
         path: "/etc/apt/sources.list.d/repo_mysql_com_apt_debian.list"
 
-    - name: "Use buster repo on bullseye for mysql 5.7"
-      when: wanted_release == 'bullseye' and 
-            mysql_version == 5.7 and 
-            (mysql_dist | default('mysql-tools')) != 'mysql-tools'
-      ansible.builtin.set_fact:
-         repo_distribution: buster
-
     - name: "Manage Mysql Debian repo"
       vars:
         wanted_dist: "{{ mysql_dist | default('mysql-tools') }}"
