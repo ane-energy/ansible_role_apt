@@ -5,14 +5,14 @@
       ansible.builtin.find:
         paths: /var/cache/ansible/apt_repos
         patterns: "*"
-      register: repos
+      register: find_repos
 
     - name: "Set repos to list of installed Debian repositories"
       ansible.builtin.set_fact:
-        repos: "{{ repos.files | map(attribute='path') | map('relpath', '/var/cache/ansible/apt_repos') | list | d([]) }}"
+        repos: "{{ find_repos.files | map(attribute='path') | map('relpath', '/var/cache/ansible/apt_repos') | list | d([]) }}"
 
 - name: "Manage Debian repositories"
   ansible.builtin.include_tasks: "repo/{{ item }}.yml"
-  loop: "{{ repos + (repos_absent | d([])) }}"
+  loop: "{{ repos | d([]) + repos_absent | d([]) }}"
   vars:
     rname: "{{ item }}"

@@ -27,6 +27,7 @@
         repo_url: http://ftp.de.debian.org/debian
         repo_url_security: https://security.debian.org/debian-security
         wanted_pools: "{{ default_pools if ansible_distribution_major_version | int < 12 else default_pools + ['non-free-firmware'] }}"
+      ignore_errors: "{{ ansible_check_mode }}"
 
     - name: "Remove legacy repo files"
       become: true
@@ -42,6 +43,7 @@
         - /etc/apt/mirrors
       loop_control:
         loop_var: file
+      ignore_errors: "{{ ansible_check_mode }}"
 
     - name: "Update package cache"
       become: true
@@ -58,6 +60,7 @@
         owner: root
         group: root
         mode: "0755"
+      ignore_errors: "{{ ansible_check_mode }}"
 
     - name: "Store repo name to variable"
       become: true
@@ -65,3 +68,4 @@
         path: "/var/cache/ansible/apt_repos/{{ rname }}"
         state: touch
       changed_when: false
+      ignore_errors: "{{ ansible_check_mode }}"

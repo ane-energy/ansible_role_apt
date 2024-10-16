@@ -11,6 +11,7 @@
     group: root
     mode: "0644"
     force: true
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: "Handle apt proxy settings"
   when: apt_proxy is defined
@@ -24,6 +25,7 @@
     group: root
     mode: "0644"
     force: true
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: "Configure auto update settings"
   become: true
@@ -40,3 +42,4 @@
     group: root
     mode: "0644"
     force: true
+  ignore_errors: "{{ ansible_check_mode }}"
