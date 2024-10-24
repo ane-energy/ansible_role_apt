@@ -1,17 +1,23 @@
 ---
-- block:
-    - name: "Manage gpg key for Docker Debian repo"
-      ansible.builtin.apt_key:
-        url: https://download.docker.com/linux/debian/gpg
-        state: "{{ 'present' if 'docker' in repos else 'absent' }}"
+- environment:
+    https_proxy: "{{ apt_proxy | d('') }}"
+  tags: repo
+  become: true
+  block:
+    - name: "Set facts for {{ rname }} debian repo"
+      ansible.builtin.set_fact:
+        key_url: https://download.docker.com/linux/debian/gpg
+        key_file_asc: "/etc/apt/keyrings/{{ rname }}.asc"
+        key_file: "/etc/apt/keyrings/{{ rname }}.gpg"
+        repo_file: "/etc/apt/sources.list.d/{{ rname }}.list"
+        repo_base: https://download.docker.com/linux/debian
+        legacy_repo_files:
+          - /etc/apt/sources.list.d/download_docker_com_linux_debian.list
 
-    - name: "Manage Docker Debian repo"
-      ansible.builtin.apt_repository:
-        repo: deb https://download.docker.com/linux/debian {{ wanted_release }} stable
-        state: "{{ 'present' if 'docker' in repos else 'absent' }}"
-        filename: docker
-        update_cache: true
-  environment:
-    https_proxy: "{{ apt_proxy }}"
-  tags:
-    - repo
+    - name: "Set repo file content for {{ rname }} debian repo"
+      ansible.builtin.set_fact:
+        repo_file_content: |
+          deb [signed-by={{ key_file }}] {{ repo_base }} {{ wanted_release }} stable
+
+    - name: "Call generic repo configuration tasks for {{ rname }} debian repo"
+      ansible.builtin.include_tasks: repo/__generic__.yml
