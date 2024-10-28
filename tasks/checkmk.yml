@@ -1,5 +1,5 @@
 ---
-- name: "Copy mongodb CheckMK plugin"
+- name: "Copy CheckMK apt plugin"
   ansible.builtin.copy:
     src: "{{ role_path }}/../../../monitoring/roles/checkmk_agent/files/agent/plugins/mk_apt"
     dest: /usr/lib/check_mk_agent/plugins/mk_apt
