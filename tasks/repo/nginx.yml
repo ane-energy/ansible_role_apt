@@ -1,15 +1,21 @@
 ---
-- block:
-    - name: "Manage gpg key for nginx Debian repo"
-      ansible.builtin.apt_key:
-        url: "https://nginx.org/keys/nginx_signing.key"
-        state: "{{ 'present' if 'nginx' in repos else 'absent' }}"
+- environment:
+    https_proxy: "{{ apt_proxy | d('') }}"
+  tags: repo
+  become: true
+  block:
+    - name: "Set facts for {{ rname }} debian repo"
+      ansible.builtin.set_fact:
+        key_url: "https://nginx.org/keys/nginx_signing.key"
+        key_file_asc: "/etc/apt/keyrings/{{ rname }}.asc"
+        key_file: "/etc/apt/keyrings/{{ rname }}.gpg"
+        repo_file: "/etc/apt/sources.list.d/{{ rname }}.list"
+        repo_base: "https://nginx.org/packages/debian"
 
-    - name: "Manage nginx Debian repo"
-      ansible.builtin.apt_repository:
-        repo: "deb https://nginx.org/packages/debian {{ ansible_distribution_release }} nginx"
-        state: "{{ 'present' if 'nginx' in repos else 'absent' }}"
-        filename: nginx
-        update_cache: true
-  environment:
-    https_proxy: "{{ apt_proxy }}"
+    - name: "Set repo file content for {{ rname }} debian repo"
+      ansible.builtin.set_fact:
+        repo_file_content: |
+          deb [signed-by={{ key_file }}] {{ repo_base }} {{ wanted_release }} main
+
+    - name: "Call generic repo configuration tasks for {{ rname }} debian repo"
+      ansible.builtin.include_tasks: repo/__generic__.yml
