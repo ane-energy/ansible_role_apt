@@ -1,53 +1,56 @@
 ---
-- name: "Update apt cache"
-  become: true
-  ansible.builtin.apt:
-    update_cache: true
-  changed_when: false
-  ignore_errors: true
-  tags: repo
+- name: "Run only on debian and compatibles"
+  when: "ansible_distribution in ['Debian', 'Ubuntu']"
+  block:
+    - name: "Update apt cache"
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+      changed_when: false
+      ignore_errors: true
+      tags: repo
 
-- name: "Install required packages + update apt cache"
-  become: true
-  ansible.builtin.apt:
-    name: "{{ packages_present_apt }}"
-    state: latest
-  ignore_errors: true
-  tags: repo
+    - name: "Install required packages + update apt cache"
+      become: true
+      ansible.builtin.apt:
+        name: "{{ packages_present_apt }}"
+        state: latest
+      ignore_errors: true
+      tags: repo
 
-- name: "Create required directories"
-  become: true
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-  loop:
-    - /etc/apt/keyrings
-  ignore_errors: "{{ ansible_check_mode }}"
+    - name: "Create required directories"
+      become: true
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - /etc/apt/keyrings
+      ignore_errors: "{{ ansible_check_mode }}"
 
-- name: "Manage APT preferences"
-  ansible.builtin.include_tasks: "preferences.yml"
-  tags: preferences
+    - name: "Manage APT preferences"
+      ansible.builtin.include_tasks: "preferences.yml"
+      tags: preferences
 
-- name: "Configure apt repositories"
-  ansible.builtin.import_tasks: repos.yml
-  tags:
-    - repo
-    - repos
+    - name: "Configure apt repositories"
+      ansible.builtin.import_tasks: repos.yml
+      tags:
+        - repo
+        - repos
 
-- name: "Configure apt repositories"
-  ansible.builtin.import_tasks: packages.yml
-  tags:
-    - package
-    - packages
-    - pkg
+    - name: "Configure apt repositories"
+      ansible.builtin.import_tasks: packages.yml
+      tags:
+        - package
+        - packages
+        - pkg
 
-- name: "Configure checkmk monitoring"
-  ansible.builtin.import_tasks: "checkmk.yml"
-  tags:
-    - never
-    - monitoring
-    - checkmk
-    - cmk
+    - name: "Configure checkmk monitoring"
+      ansible.builtin.import_tasks: "checkmk.yml"
+      tags:
+        - never
+        - monitoring
+        - checkmk
+        - cmk
