@@ -1,0 +1,8 @@
+---
+- name: "Upgrade package {{ pname }} to latest available version"
+  when: pname in ansible_facts.packages
+  become: true
+  ansible.builtin.apt:
+    name: "{{ pname }}"
+    state: latest
+  ignore_errors: "{{ ansible_check_mode }}"

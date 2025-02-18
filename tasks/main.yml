@@ -40,12 +40,20 @@
         - repo
         - repos
 
-    - name: "Configure apt repositories"
+    - name: "Handle apt packages"
       ansible.builtin.import_tasks: packages.yml
       tags:
         - package
         - packages
         - pkg
+
+    - name: "Upgrade packages to latest available version"
+      when: packages_latest is defined
+      ansible.builtin.import_tasks: latest/loop.yml
+      tags:
+        - never
+        - latest
+        - upgrade_latest
 
     - name: "Configure checkmk monitoring"
       ansible.builtin.import_tasks: "checkmk.yml"

@@ -1,0 +1,9 @@
+---
+- name: "Get package_facts"
+  ansible.builtin.package_facts:
+
+- name: "Loop packages to be upgradet to latest version"
+  ansible.builtin.include_tasks: latest/latest.yml
+  loop: "{{ packages_latest | d([]) }}"
+  loop_control:
+    loop_var: pname
