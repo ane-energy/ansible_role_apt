@@ -2,7 +2,7 @@
 - name: "Copy CheckMK apt plugin"
   become: true
   ansible.builtin.get_url:
-    url: "https://{{ checkmk_master_ip }}/cmk/check_mk/agents/plugins/mk_apt"
+    url: "https://{{ checkmk_master_host }}/cmk/check_mk/agents/plugins/mk_apt"
     dest: "/usr/lib/check_mk_agent/plugins/mk_apt"
     validate_certs: false
     mode: 0755
